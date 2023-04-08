@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const bodyParser = require("body-parser")
 const ejs = require("ejs")
@@ -16,9 +17,7 @@ const userSchema = new mongoose.Schema({
   password: String
 })
 
-const secret = "bitchesintheroom"
-
-userSchema.plugin(encryption, {secret: secret, encryptedFields: ["password"]})
+userSchema.plugin(encryption, {secret: process.env.SECRET, encryptedFields: ["password"]})
 
 const user = new mongoose.model("user", userSchema)
 
@@ -54,7 +53,7 @@ app.post("/login", (req, res)=>{
   const password = req.body.password
   user.findOne({email: username}).then((data)=>{
     if(data){
-      console.log(data);
+      //console.log(data);
       if(data.password == password){
         res.render("secrets")
       }

@@ -4,6 +4,9 @@ const bodyParser = require("body-parser")
 const ejs = require("ejs")
 const mongoose = require("mongoose")
 const encryption = require("mongoose-encryption")
+const md5 = require("md5")
+// const bcrypt = require("bcyrpt")
+// const saltRounds = 10
 const app = express()
 
 app.use(express.static("public"))
@@ -17,7 +20,7 @@ const userSchema = new mongoose.Schema({
   password: String
 })
 
-userSchema.plugin(encryption, {secret: process.env.SECRET, encryptedFields: ["password"]})
+// userSchema.plugin(encryption, {secret: process.env.SECRET, encryptedFields: ["password"]})
 
 const user = new mongoose.model("user", userSchema)
 
@@ -38,7 +41,7 @@ app.get("/register", (req, res)=>{
 
 app.post("/register", (req, res)=>{
   const username = req.body.username
-  const password = req.body.password
+  const password = md5(req.body.password)
   const newUser = new user({
     email: username,
     password: password
@@ -50,7 +53,7 @@ app.post("/register", (req, res)=>{
 
 app.post("/login", (req, res)=>{
   const username = req.body.username
-  const password = req.body.password
+  const password = md5(req.body.password)
   user.findOne({email: username}).then((data)=>{
     if(data){
       //console.log(data);
